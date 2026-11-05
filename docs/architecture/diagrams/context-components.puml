@@ -1,0 +1,20 @@
+@startuml
+left to right direction
+actor "Individual / group member" as User
+actor Approver
+rectangle "SplitSmart Java Swing MVP" {
+  [Swing presentation] as UI
+  [Application use cases] as App
+  [Domain model and policies] as Domain
+  interface "Repositories / gateways (ports)" as Ports
+}
+database "Storage: undecided" as Store
+cloud "Notification delivery: undecided" as Notify
+User --> UI
+Approver --> UI
+UI --> App : actions / queries
+App --> Domain : invoke rules
+App --> Ports : load / save / query
+Ports --> Store : adapter, mechanism undecided
+App --> Notify : notify group, channel undecided
+@enduml

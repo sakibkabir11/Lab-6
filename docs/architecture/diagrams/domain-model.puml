@@ -1,0 +1,38 @@
+@startuml
+hide methods
+skinparam classAttributeIconSize 0
+class User
+class Group
+class Membership
+class Expense
+class ExpenseSplit
+class ApprovalDecision
+class Obligation
+class Payment
+class BalanceCalculator
+class Report <<query result>>
+User "1" -- "0..*" Membership
+Group "1" -- "0..*" Membership
+Group "1" -- "0..*" Expense
+Expense "1" *-- "1..*" ExpenseSplit
+Expense "1" -- "0..*" ApprovalDecision
+Expense "1" -- "0..*" Obligation : approved expense yields
+Obligation "1" <-- "0..*" Payment : settlement matching open
+ExpenseSplit ..> User : participant
+Expense ..> User : payer
+ApprovalDecision ..> User : approver
+Payment ..> User : sender / recipient
+BalanceCalculator ..> Obligation
+BalanceCalculator ..> Payment
+Report ..> Expense
+Report ..> Payment
+Report ..> BalanceCalculator
+note right of Obligation
+Created/activated only after required approval.
+Amounts and balances use BigDecimal.
+Currency, scale, rounding, allocation unresolved.
+end note
+note bottom of Membership
+Removal and historical membership semantics open.
+end note
+@enduml

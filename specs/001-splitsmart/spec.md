@@ -30,6 +30,7 @@
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Create and manage personal account (Priority: P1)
+
 A new user creates an account and logs in to access their own expense and balance information without seeing other users' private data.
 
 **Why this priority**: Account setup and identity are foundational to every other SplitSmart action. Without a user identity, no group membership or expense tracking can be trusted.
@@ -44,6 +45,7 @@ A new user creates an account and logs in to access their own expense and balanc
 ---
 
 ### User Story 2 - Create and manage a group (Priority: P1)
+
 A user creates a group for roommates, travelers, coworkers, or family members and can manage who belongs to it.
 
 **Why this priority**: Groups are the structure that enables shared expenses and settlement tracking. This is central to the value proposition of SplitSmart.
@@ -58,6 +60,7 @@ A user creates a group for roommates, travelers, coworkers, or family members an
 ---
 
 ### User Story 3 - Create and review shared expenses (Priority: P1)
+
 A user adds a shared expense with amount, date, description, split method, involved users, and optional receipt image. The expense is then reviewed and approved before it affects balances.
 
 **Why this priority**: Expense creation is the core transaction in the product and drives balance adjustments, notification flows, and reporting.
@@ -73,6 +76,7 @@ A user adds a shared expense with amount, date, description, split method, invol
 ---
 
 ### User Story 4 - Receive notifications and handle approvals (Priority: P2)
+
 Group members are notified when a new expense is created and can review or approve it according to the approval process.
 
 **Why this priority**: Approval and notification support accountability and prevent unauthorized or mistaken expense entries from changing balances.
@@ -87,6 +91,7 @@ Group members are notified when a new expense is created and can review or appro
 ---
 
 ### User Story 5 - Track balances and payments (Priority: P1)
+
 Users can see who owes whom, settle balances, and record payments so the system reflects current state accurately.
 
 **Why this priority**: Accurate balance management is the main financial utility of the product and the reason users rely on it.
@@ -101,6 +106,7 @@ Users can see who owes whom, settle balances, and record payments so the system 
 ---
 
 ### User Story 6 - Review reports and summaries (Priority: P2)
+
 Users view reports and summaries of their expenses, balances, and payments across a selected date range or other filters.
 
 **Why this priority**: Reporting supports clarity, planning, and dispute resolution, especially for recurring group expenses.

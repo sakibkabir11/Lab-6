@@ -1,0 +1,31 @@
+@startuml
+actor Member
+actor Approver
+participant "Swing Expense Form" as UI
+participant "SubmitExpense use case" as Submit
+participant "Expense validation" as Domain
+participant "ExpenseRepository port" as Repo
+participant "NotificationGateway port" as Notify
+participant "ReviewExpense use case" as Review
+participant "BalanceCalculator" as Balance
+Member -> UI : enter expense details
+UI -> Submit : submit(request)
+Submit -> Repo : load group and current membership
+Submit -> Domain : validate and create pending expense
+Domain --> Submit : pending expense
+Submit -> Repo : save pending expense
+Submit -> Notify : notify current group members
+Submit --> UI : submission result / pending
+Approver -> Review : approve or reject
+Review -> Repo : load expense and approver eligibility
+Review -> Domain : record decision
+alt approved
+  Domain --> Review : approved expense
+  Review -> Repo : save decision and approval state
+  Review -> Balance : include approved obligations
+else rejected
+  Domain --> Review : rejected expense
+  Review -> Repo : save rejection history
+  note over Balance : Rejected expense does not affect balances
+end
+@enduml

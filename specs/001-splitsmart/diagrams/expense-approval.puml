@@ -1,0 +1,37 @@
+@startuml
+title SplitSmart - Expense Submission and Approval
+
+actor "Group Member" as Member
+actor "Designated Approver" as Approver
+participant "Swing View" as UI
+participant "Expense Use Case" as UC
+participant "Expense Domain" as Domain
+participant "Repository Port" as Repo
+participant "Notification Port" as Notify
+
+Member -> UI : enter and submit expense
+UI -> UC : submit(request)
+UC -> Domain : validate amount, split, payer, participants
+Domain --> UC : valid expense or validation errors
+UC -> Repo : save pending expense
+UC -> Notify : request notification to current group members
+UC --> UI : pending status
+UI --> Member : show pending review state
+note over Notify
+  This is a delivery request, not proof
+  of successful delivery. Failure policy
+  and submission coupling are unresolved.
+end note
+
+Approver -> UI : approve or reject
+UI -> UC : review(expense, decision)
+UC -> Repo : verify group and designated approver
+UC -> Domain : apply decision
+alt approved
+  UC -> Repo : persist approval and obligations
+  UC --> UI : approved; balances now include expense
+else rejected
+  UC -> Repo : persist rejection
+  UC --> UI : rejected; balances unchanged
+end
+@enduml

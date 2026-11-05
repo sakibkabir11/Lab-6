@@ -1,6 +1,6 @@
 # Spec Kit Architecture & Design Prompt
 
-Project: **SplitSmart**  
+Project: **SplitSmart**
 Repository: `sakibkabir11/Lab-6`
 
 ## 0. Shared preparation and ground rules
@@ -30,10 +30,11 @@ Paste this into the Spec Kit workflow after confirming that the repository is at
 
 You are the architecture/design analyst for the SplitSmart project in this repository.
 
-**Objective**  
+**Objective**
 Produce a complete, internally consistent, traceable architecture and design proposal based strictly on the current repository's constitution and the latest clarified `spec.md`. This is a planning/design task only. Do not implement code.
 
 **Mandatory input discovery**
+
 - Read `.specify/memory/constitution.md` in full.
 - Find and read the latest clarified `spec.md` in full. Verify that it is the post-Clarify version; do not use a template, stale copy, or similarly named document without checking.
 - Read `UserRequirement.md` if present and all referenced source requirements.
@@ -42,6 +43,7 @@ Produce a complete, internally consistent, traceable architecture and design pro
 - If a critical input cannot be found or two candidate specifications conflict, stop and report the ambiguity rather than silently choosing.
 
 **Authority and constraints**
+
 - The customer specification defines what the product must do.
 - The constitution defines project principles and mandatory technical constraints.
 - Do not turn implementation preferences into customer requirements.
@@ -52,6 +54,7 @@ Produce a complete, internally consistent, traceable architecture and design pro
 - Human review of AI-generated output is required.
 
 **Required analysis**
+
 1. Extract functional requirements, non-functional requirements, business rules, actors, workflows, domain concepts, constraints, and acceptance criteria from the clarified specification.
 2. Identify ambiguities, contradictions, omissions, and risks that materially affect architecture. Do not resolve business-rule ambiguity by guessing.
 3. Propose a high-level architecture and explain component responsibilities, dependencies, boundaries, and allowed dependency direction.
@@ -68,6 +71,7 @@ Produce a complete, internally consistent, traceable architecture and design pro
 
 **Deliverables**
 Create or update the standard Spec Kit planning artifacts appropriate to this repository. At minimum, produce:
+
 - An architecture overview with context/boundary, components, responsibilities, dependency direction, and rationale.
 - A detailed design section covering package structure, domain model, use-case flows, interfaces/boundaries, data/persistence approach, UI structure, error handling, and test strategy.
 - PlantUML source for useful diagrams (at minimum component/container-level and domain/class-level; add sequence/state diagrams where they clarify important workflows). Ensure diagrams are syntactically plausible and consistent with the written design.
@@ -78,6 +82,7 @@ Create or update the standard Spec Kit planning artifacts appropriate to this re
 Use the repository's established Spec Kit artifact locations and naming conventions. Do not overwrite the constitution or clarified feature specification. If the standard plan artifact already exists, inspect it and follow the repository workflow rather than destroying prior work; explain any replacement or versioning decision.
 
 **Quality gates before finishing**
+
 - Verify every requirement is either addressed, explicitly deferred, or listed as unresolved.
 - Verify every mandated constitution constraint is reflected in the design.
 - Check for internal contradictions between diagrams, package structure, domain model, and prose.
@@ -91,4 +96,3 @@ Use the repository's established Spec Kit artifact locations and naming conventi
 Return a concise decision summary, followed by the artifacts and a list of unresolved decisions requiring human input.
 
 ---
-

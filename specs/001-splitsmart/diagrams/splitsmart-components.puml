@@ -1,0 +1,27 @@
+@startuml
+title SplitSmart - Proposed Component Boundaries
+
+actor User
+component "Swing Presentation\nsplitsmart.ui" as UI
+component "Application Workflows\nsplitsmart.application" as APP
+component "Domain Model and Policies\nsplitsmart.domain" as DOMAIN
+interface "Repository / Identity Ports" as PORTS
+interface "Notification / Receipt Ports" as EFFECTS
+component "Approved Infrastructure Adapters\nsplitsmart.infrastructure" as INFRA
+
+User --> UI : interacts
+UI --> APP : use-case requests / results
+APP --> DOMAIN : validate and apply domain behavior
+APP --> PORTS : load and save through abstractions
+APP --> EFFECTS : request external effects
+INFRA ..|> PORTS
+INFRA ..|> EFFECTS
+note right of INFRA
+  No adapter technology selected.
+  Add only approved implementations.
+end note
+note bottom of DOMAIN
+  No Swing or infrastructure dependency.
+  All monetary values use BigDecimal.
+end note
+@enduml

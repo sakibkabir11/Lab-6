@@ -1,0 +1,54 @@
+@startuml
+title SplitSmart - Proposed Domain Relationships
+
+class User
+class Group
+class GroupMembership <<inferred>>
+class Expense
+class SplitAllocation <<inferred>>
+class ApprovalDecision
+class Obligation <<inferred>>
+class Payment
+class Balance <<derived>>
+class ReportQuery
+class ReportResult
+
+Group "1" -- "1..*" GroupMembership
+User "1" -- "0..*" GroupMembership
+Group "1" -- "0..*" Expense
+User "1" -- "0..*" Expense : payer
+Expense "1" -- "0..*" SplitAllocation
+SplitAllocation "*" --> "1" User : participant
+Expense "1" -- "0..*" ApprovalDecision
+User "1" -- "0..*" ApprovalDecision : approver
+Expense "1" -- "0..*" Obligation : approved allocations
+Obligation "*" --> "1" User : debtor
+Obligation "*" --> "1" User : creditor
+Obligation "0..*" -- "0..*" Payment : settled by
+Balance ..> Obligation : derived from
+Balance ..> Payment : reduced by
+ReportQuery ..> ReportResult : produces
+ReportResult ..> Expense
+ReportResult ..> Payment
+ReportResult ..> Balance
+
+note right of Expense
+  Pending expenses do not create
+  obligations or change balances.
+  Amount is BigDecimal and > 0.
+  Empty participant behavior is open.
+end note
+note bottom of SplitAllocation
+  Percentage totals must equal 100%.
+  Monetary scale and remainder policy
+  remain unresolved.
+end note
+note bottom of Balance
+  BigDecimal projection; currency,
+  grouping/netting policy unresolved.
+end note
+note right of Payment
+  Allocation to one or multiple
+  obligations is unresolved.
+end note
+@enduml
