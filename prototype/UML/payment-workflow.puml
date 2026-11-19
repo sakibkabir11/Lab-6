@@ -1,0 +1,53 @@
+@startuml
+title SplitSmart - Record Payment Sequence
+
+actor "Member" as Member
+participant "React UI" as UI
+participant "recordPayment\nServer Action" as Action
+participant "Prisma" as Prisma
+database "SQLite" as DB
+
+Member -> UI : Open payment form
+UI -> Member : Select sender, recipient,\namount, date, and note
+Member -> UI : Submit payment
+UI -> Action : recordPayment(input)
+
+Action -> Action : Validate positive cents,\ndifferent users
+Action -> Prisma : membership.findMany(groupId,\nfromUserId, toUserId)
+Prisma -> DB : Load memberships
+DB --> Prisma : Matching memberships
+Prisma --> Action : Membership count
+
+alt Both users are group members
+  Action -> Prisma : expense.findMany(APPROVED)\ninclude shares
+  Prisma -> DB : Load approved expense shares
+  DB --> Prisma : Approved expenses
+
+  Action -> Prisma : payment.findMany(groupId)
+  Prisma -> DB : Load existing payments
+  DB --> Prisma : Payments
+
+  Action -> Action : Calculate outstanding balance\nin payment direction
+
+  alt Balance exists and amount is in range
+    Action -> Prisma : payment.create(...)
+    Prisma -> DB : Insert payment ledger record
+    DB --> Prisma : Saved payment
+    Action --> UI : { ok: true }
+    UI -> UI : Reload workspace\nand recalculate balances
+    UI --> Member : "Payment recorded"
+  else No balance or amount too large
+    Action --> UI : Validation error
+    UI --> Member : Show error
+  end
+else One or both users are not members
+  Action --> UI : "Both people must be members..."
+  UI --> Member : Show error
+end
+
+note over UI,DB
+  Recording a payment creates a ledger entry only.
+  It does not transfer funds or call a payment service.
+end note
+
+@enduml

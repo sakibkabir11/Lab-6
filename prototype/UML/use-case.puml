@@ -1,0 +1,40 @@
+@startuml
+title SplitSmart - Use Case Diagram
+
+left to right direction
+
+actor "Group Member" as Member
+actor "Group Approver" as Approver
+
+rectangle "SplitSmart Prototype" {
+  usecase "Switch Demo User" as UC1
+  usecase "View Dashboard" as UC2
+  usecase "View Group Balances" as UC3
+  usecase "Create Expense" as UC4
+  usecase "Choose Equal Split" as UC5
+  usecase "Choose Percentage Split" as UC6
+  usecase "Attach Receipt" as UC7
+  usecase "Review Pending Expense" as UC8
+  usecase "Approve or Reject Expense" as UC9
+  usecase "Record Payment" as UC10
+  usecase "View Activity" as UC11
+  usecase "View Date-filtered Reports" as UC12
+}
+
+Member --> UC1
+Member --> UC2
+Member --> UC3
+Member --> UC4
+Member --> UC11
+Member --> UC12
+Member --> UC10
+
+UC4 ..> UC5 : <<include>>
+UC4 ..> UC6 : <<include>>
+UC4 ..> UC7 : <<include>>
+
+Approver --> UC8
+UC8 ..> UC9 : <<include>>
+Approver --|> Member
+
+@enduml

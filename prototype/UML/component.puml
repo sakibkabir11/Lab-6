@@ -1,0 +1,33 @@
+@startuml
+title SplitSmart - Component / Deployment View
+
+actor "Demo User" as User
+
+node "Browser" {
+  component "SplitSmart React UI" as UI
+  component "Client State and Balance Calculation" as State
+}
+
+node "Next.js Application" {
+  component "Server Page" as Page
+  component "Server Actions" as Actions
+  component "Prisma Client" as Prisma
+}
+
+database "SQLite" as SQLite {
+  component "Users, Groups, Memberships" as Core
+  component "Expenses and Expense Shares" as Expenses
+  component "Payments" as Payments
+}
+
+User --> UI : interact
+UI --> State : render views and calculate balances
+UI --> Actions : createExpense / reviewExpense / recordPayment
+Page --> UI : load initial workspace
+Page --> Actions : loadWorkspace
+Actions --> Prisma : typed queries and transactions
+Prisma --> SQLite : SQL
+Core --> Expenses
+Core --> Payments
+
+@enduml

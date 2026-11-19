@@ -1,0 +1,86 @@
+@startuml
+title SplitSmart - Domain Model
+
+hide methods
+skinparam linetype ortho
+
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SplitMethod {
+  EQUAL
+  PERCENT
+}
+
+class User {
+  id : String
+  name : String
+  email : String
+  color : String
+  createdAt : DateTime
+}
+
+class Group {
+  id : String
+  name : String
+  emoji : String
+  description : String
+  createdAt : DateTime
+}
+
+class Membership {
+  id : String
+  isApprover : Boolean
+}
+
+class Expense {
+  id : String
+  description : String
+  amountCents : Int
+  date : DateTime
+  splitMethod : String
+  status : String
+  createdById : String
+  reviewedById : String?
+  reviewedAt : DateTime?
+  note : String
+  receiptDataUrl : String?
+  createdAt : DateTime
+}
+
+class ExpenseShare {
+  id : String
+  amountCents : Int
+  percentage : Float?
+}
+
+class Payment {
+  id : String
+  amountCents : Int
+  date : DateTime
+  note : String
+  createdAt : DateTime
+}
+
+Group "1" *-- "0..*" Membership : memberships
+User "1" *-- "0..*" Membership : memberships
+Group "1" *-- "0..*" Expense
+User "1" -- "0..*" Expense : pays
+Expense "1" *-- "1..*" ExpenseShare : shares
+User "1" -- "0..*" ExpenseShare : bears
+ExpenseStatus <-- Expense
+SplitMethod <-- Expense
+
+Group "1" *-- "0..*" Payment
+User "1" -- "0..*" Payment : sends
+User "1" -- "0..*" Payment : receives
+
+note right of Expense
+  Amounts and share allocations are integer cents.
+  Approved expenses affect displayed balances.
+end note
+
+@enduml

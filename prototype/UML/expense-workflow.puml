@@ -1,0 +1,61 @@
+@startuml
+title SplitSmart - Create and Approve Expense Sequence
+
+actor "Member" as Member
+actor "Approver" as Approver
+participant "React UI" as UI
+participant "createExpense\nServer Action" as Create
+participant "Prisma" as Prisma
+database "SQLite" as DB
+
+Member -> UI : Open expense form
+UI -> Member : Collect group, payer, amount,\ndate, split method, and receipt
+
+Member -> UI : Submit expense
+UI -> Create : createExpense(input)
+
+Create -> Create : Validate positive cents,\nparticipants, date, and receipt
+Create -> Prisma : membership.findMany(groupId)
+Prisma -> DB : Query current members
+DB --> Prisma : Members
+Prisma --> Create : Allowed member IDs
+
+alt Equal split
+  Create -> Create : Divide cents evenly;\nassign remainder to earlier shares
+else Percentage split
+  Create -> Create : Validate 2-decimal percentages\ntotal 100%; calculate cents
+end
+
+Create -> Prisma : expense.create(status=PENDING,\nshares=create)
+Prisma -> DB : Insert expense and shares
+DB --> Prisma : Saved expense
+Prisma --> Create : Expense
+Create --> UI : { ok: true }
+UI -> UI : Reload workspace
+UI --> Member : "Expense submitted for approval"
+
+Approver -> UI : Open pending approval
+UI -> Approver : Show expense and amount
+Approver -> UI : Approve or reject
+
+UI -> Create : reviewExpense(expenseId,\nreviewerId, decision)
+Create -> Prisma : expense.findUnique(expenseId)
+Prisma -> DB : Load expense
+DB --> Prisma : Expense
+Create -> Prisma : membership.findUnique(userId, groupId)\nwhere isApprover=true
+Prisma -> DB : Check approver membership
+DB --> Prisma : Membership
+
+alt Authorized and still PENDING
+  Create -> Prisma : expense.update(status, reviewer,\nreviewedAt)
+  Prisma -> DB : Update expense status
+  DB --> Prisma : Updated expense
+  Create --> UI : { ok: true }
+  UI -> UI : Reload workspace\nand recalculate balances
+  UI --> Approver : "Expense approved/rejected"
+else Unauthorized or no longer pending
+  Create --> UI : Validation error
+  UI --> Approver : Show error
+end
+
+@enduml
