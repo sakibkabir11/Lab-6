@@ -1,0 +1,93 @@
+@startuml
+title SplitSmart - Key Workflows
+autonumber
+
+actor "Demo user" as user
+participant "SplitSmartApp\n(browser)" as ui
+participant "Server actions" as actions
+participant "Prisma client" as prisma
+database "SQLite" as db
+
+== Create a group ==
+user -> ui : Submit group details
+ui -> actions : createGroup(name, emoji,\ndescription, creatorId)
+actions -> prisma : Find creator
+prisma -> db : Read User
+db --> prisma : User found
+actions -> prisma : Create Group and creator Membership\n(isApprover = true)
+prisma -> db : Insert group and membership
+db --> prisma : Group id
+prisma --> actions : Group id
+actions --> ui : Success
+ui -> actions : loadWorkspace()
+actions -> prisma : Read users, groups,\nexpenses, payments
+prisma -> db : Select workspace data
+db --> prisma : Workspace data
+prisma --> actions : Workspace data
+actions --> ui : Refreshed workspace
+
+== Record an expense ==
+user -> ui : Submit expense and split
+ui -> actions : createExpense(details, participants,\nsplitMethod, receipt?)
+actions -> prisma : Read group memberships
+prisma -> db : Select member ids
+db --> prisma : Member ids
+actions -> actions : Validate amount, date, members,\nparticipants and split
+alt Invalid input or membership
+  actions --> ui : Error message; no expense created
+else Valid expense
+  actions -> actions : Calculate integer-cent shares\n(equal or percentage)
+  actions -> prisma : Create Expense(status = APPROVED)\nand ExpenseShare rows
+  prisma -> db : Insert expense and shares
+  db --> prisma : Created
+  prisma --> actions : Success
+  actions --> ui : Success
+  ui -> actions : loadWorkspace()
+  actions --> ui : Refreshed expenses and payments
+  ui -> ui : Recompute balances and activity
+end
+
+note over actions,db
+  Newly submitted expenses are immediately APPROVED.
+  The review path below is for existing PENDING
+  expenses (for example, demo queue entries).
+end note
+
+== Review a pending expense ==
+user -> ui : Approve or decline pending expense
+ui -> actions : reviewExpense(expenseId,\nreviewerId, decision)
+actions -> prisma : Find expense and reviewer membership
+prisma -> db : Read Expense and Membership
+db --> prisma : Current status and approver flag
+actions -> actions : Require PENDING status\nand designated approver
+actions -> prisma : Update status, reviewer and timestamp
+prisma -> db : Update Expense
+db --> prisma : Updated
+actions --> ui : Success or validation error
+
+== Record a payment ==
+user -> ui : Submit payment record
+ui -> actions : recordPayment(group, sender,\nreceiver, amount, date)
+actions -> prisma : Verify both group memberships
+prisma -> db : Read Membership rows
+db --> prisma : Memberships
+actions -> prisma : Read approved expenses/shares\nand prior payments
+prisma -> db : Read ledger records
+db --> prisma : Ledger records
+actions -> actions : Calculate outstanding amount\nand validate direction/amount
+alt Invalid direction, amount or membership
+  actions --> ui : Error message; no payment created
+else Valid payment
+  actions -> prisma : Create Payment ledger record
+  prisma -> db : Insert Payment
+  db --> prisma : Created
+  actions --> ui : Success
+  ui -> actions : loadWorkspace()
+  actions --> ui : Refreshed workspace
+end
+
+note over user,db
+  Recording a payment only updates the prototype ledger;
+  it does not transfer money or call a payment service.
+end note
+@enduml

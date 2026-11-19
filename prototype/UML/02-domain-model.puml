@@ -1,0 +1,96 @@
+@startuml
+title SplitSmart - Persisted Domain Model
+hide methods
+skinparam classAttributeIconSize 0
+
+class User {
+  +id: String <<PK>>
+  name: String
+  email: String <<unique>>
+  color: String
+  createdAt: DateTime
+}
+
+class Group {
+  +id: String <<PK>>
+  name: String
+  emoji: String
+  description: String
+  createdAt: DateTime
+}
+
+class Membership {
+  +id: String <<PK>>
+  userId: String
+  groupId: String
+  isApprover: Boolean
+  --
+  unique(userId, groupId)
+}
+
+class Expense {
+  +id: String <<PK>>
+  groupId: String
+  payerId: String
+  createdById: String
+  reviewedById: String?
+  description: String
+  amountCents: Int
+  date: DateTime
+  splitMethod: String
+  status: String
+  reviewedAt: DateTime?
+  note: String
+  receiptDataUrl: String?
+  createdAt: DateTime
+}
+
+class ExpenseShare {
+  +id: String <<PK>>
+  expenseId: String
+  userId: String
+  amountCents: Int
+  percentage: Float?
+  --
+  unique(expenseId, userId)
+}
+
+class Payment {
+  +id: String <<PK>>
+  groupId: String
+  fromUserId: String
+  toUserId: String
+  amountCents: Int
+  date: DateTime
+  note: String
+  createdAt: DateTime
+}
+
+class EnvironmentCheck <<setup utility>> {
+  +id: Int <<PK>>
+  message: String
+  createdAt: DateTime
+}
+
+User "1" -- "0..*" Membership : belongs through
+Group "1" -- "0..*" Membership : contains
+Group "1" -- "0..*" Expense : records
+User "1" -- "0..*" Expense : pays
+Expense "1" *-- "0..*" ExpenseShare : split into
+Group "1" -- "0..*" Payment : records
+User "1" -- "0..*" Payment : sends
+User "1" -- "0..*" Payment : receives
+
+note bottom of Expense
+  amountCents and share amounts are integer cents.
+  status and splitMethod are String fields in the
+  database; the app uses values such as APPROVED,
+  PENDING, REJECTED, EQUAL, and PERCENT.
+end note
+
+note bottom of ExpenseShare
+  The current Prisma schema does not declare a
+  User relation for userId. Expense.createdById and
+  reviewedById are also stored without relations.
+end note
+@enduml

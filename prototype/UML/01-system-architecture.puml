@@ -1,0 +1,41 @@
+@startuml
+title SplitSmart - System Architecture
+left to right direction
+skinparam componentStyle rectangle
+
+actor "Demo user" as user
+
+node "Browser" {
+  component "SplitSmartApp\nReact client" as client
+}
+
+node "Next.js application" {
+  component "Home route\nsrc/app/page.tsx" as page
+  component "Server actions\nsrc/app/actions.ts" as actions
+  component "Prisma client\nsrc/lib/prisma.ts" as prisma
+}
+
+database "SQLite\nprisma/dev.db by default" as db
+
+user --> client : navigate, select demo identity,\nsubmit forms
+page --> actions : loadWorkspace()
+actions --> prisma : read / write
+prisma --> db : SQL
+page --> client : initial workspace data
+client --> actions : create group/member/expense,\nreview expense, record payment
+client --> actions : loadWorkspace() after success
+actions --> client : result or validation error
+
+note right of client
+  The client derives balances and reports
+  from the loaded expenses and payments.
+  The user selector is a demo identity
+  switcher, not authentication.
+end note
+
+note bottom of db
+  Receipt images are stored as data URLs
+  in SQLite. Payments are ledger records;
+  no funds are transferred.
+end note
+@enduml

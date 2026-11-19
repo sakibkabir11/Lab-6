@@ -1,6 +1,6 @@
 # SplitSmart prototype
 
-A responsive Next.js expense-sharing demo backed by SQLite through Prisma 6. The app includes group balances, recent activity, pending approvals, equal and percentage splits, optional receipt images, payment records, and date-filtered reports.
+A responsive Next.js expense-sharing demo backed by SQLite through Prisma 6. Create groups, add members, record shared expenses, review balances and expense history, and log payments. Equal and percentage splits, optional receipt images, and date-filtered reports are also included.
 
 ## Run locally
 
@@ -27,6 +27,6 @@ npm run build
 
 ## Prototype behavior
 
-The user selector is a demo identity switcher, not authentication or access control. Approvals are local workflow state; notifications are represented by the in-app review queue. Recording a payment only adds a ledger entry and does not transfer funds or connect to a payment service. Receipt images are stored as local data URLs in SQLite. Do not use this prototype for real financial or personal data.
+The user selector is a demo identity switcher, not authentication or access control. New expenses are recorded immediately and affect balances; pre-existing demo expenses marked pending can still be reviewed in the in-app queue. Recording a payment only adds a ledger entry and does not transfer funds or connect to a payment service. Receipt images are stored as local data URLs in SQLite. Do not use this prototype for real financial or personal data.
 
-Amounts and allocated shares are stored as integer cents. Percentage allocations accept two decimal places and must add to exactly 100%; split remainders are assigned so allocated cents always sum to the expense total.
+Amounts and allocated shares are stored as integer cents. Percentage allocations accept two decimal places and must add to exactly 100%; equal-split remainder cents are assigned in stable member-ID order so shares always sum to the expense total. Group totals are calculated from member shares and always net to zero.
